@@ -10,4 +10,5 @@ export const mcpGlossary: Record<string, string> = {
   Transport: "How messages travel between client and server — either stdio (local) or Streamable HTTP (remote).",
   stdio: "Standard input/output — a local transport where the host runs the server as a subprocess.",
   "Streamable HTTP": "A remote transport using HTTP with optional server-sent events for streaming.",
+  "Playwright MCP": "An MCP server that exposes browser automation tools — navigate, click, fill forms, take screenshots — letting AI agents interact with web pages.",
 };
