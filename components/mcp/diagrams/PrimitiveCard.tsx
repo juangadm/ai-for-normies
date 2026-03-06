@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import { PRIMITIVE_COLORS } from "@/lib/constants";
 
 type PrimitiveType = keyof typeof PRIMITIVE_COLORS;
@@ -18,12 +21,30 @@ export function PrimitiveCard({
   examples: string[];
 }) {
   const color = PRIMITIVE_COLORS[type];
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold: 0.2 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   return (
     <div
+      ref={ref}
       id={id}
-      className="border-l-[3px] bg-white py-4 pl-5 pr-4"
-      style={{ borderColor: color.accent }}
+      className="border-l-[3px] bg-white py-4 pl-5 pr-4 transition-all duration-600 ease-out"
+      style={{
+        borderColor: color.accent,
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateX(0)" : "translateX(-16px)",
+      }}
     >
       <div
         className="mb-2 font-mono text-[11px] uppercase tracking-[0.15em]"
