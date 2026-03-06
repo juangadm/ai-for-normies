@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Departure Mono";
+  src: url("/fonts/DepartureMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --color-cream: #fbfbfb;
+  --color-ink: #1d1d1f;
+  --color-ink-light: #6b6f76;
+  --color-ink-muted: #9b9fa7;
+  --color-border: #e4e4e7;
+
+  --color-accent: #e67e22;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: "EB Garamond", "Georgia", serif;
+  --font-mono: "Departure Mono", ui-monospace, monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: #00000015;
+}
+
+/* Prose-like justified text for module content */
+.prose-body {
+  text-align: justify;
+}
+
+/* Unicode section divider */
+.section-divider {
+  color: var(--color-border);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  text-align: center;
+  user-select: none;
+}
