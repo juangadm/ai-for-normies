@@ -43,6 +43,8 @@ export function Primitives() {
             "file://docs/api-spec.yaml",
             "db://users/{id}/profile",
             "metrics://dashboard/conversion",
+            "browser://page/snapshot",
+            "browser://console/messages",
           ]}
         />
         <div className="mt-4 border-l-2 border-border pl-5">
@@ -74,6 +76,7 @@ export function Primitives() {
             "support-diagnosis(issue, context)",
             "code-review(diff, guidelines)",
             "weekly-report(metrics, period)",
+            "playwright-test-flow(url, steps)",
           ]}
         />
         <div className="mt-4 border-l-2 border-border pl-5">
@@ -100,6 +103,8 @@ export function Primitives() {
             "send_email(to, subject, body)",
             "create_ticket(title, priority)",
             "deploy_service(env, version)",
+            "browser_click(selector)",
+            "browser_fill_form(fields)",
           ]}
         />
         <div className="mt-4 border-l-2 border-border pl-5">
