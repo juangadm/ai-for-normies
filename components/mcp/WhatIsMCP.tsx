@@ -1,6 +1,8 @@
 import { SectionCard } from "@/components/layout/SectionCard";
 import { TermDefinition } from "@/components/shared/TermDefinition";
 import { CalloutBox } from "@/components/shared/CalloutBox";
+import { IntegrationDiagram } from "./diagrams/IntegrationDiagram";
+import { AdoptionGrid } from "./diagrams/AdoptionGrid";
 import { mcpGlossary } from "@/content/mcp/glossary";
 
 export function WhatIsMCP() {
@@ -61,6 +63,8 @@ export function WhatIsMCP() {
         </div>
       </div>
 
+      <IntegrationDiagram />
+
       {/* The Solution */}
       <div id="the-solution" className="mb-8">
         <h3 className="mb-3 font-mono text-[12px] font-semibold uppercase tracking-wider text-ink">
@@ -93,21 +97,12 @@ export function WhatIsMCP() {
         <h3 className="mb-3 font-mono text-[12px] font-semibold uppercase tracking-wider text-ink">
           Who&apos;s already using it
         </h3>
-        <div className="space-y-4 text-[14px] leading-[1.8] text-ink-light">
-          <p>
-            Anthropic created MCP and maintains the spec. AI-powered editors
-            like <strong>Cursor, VS Code, and Windsurf</strong> have built MCP
-            support directly into their products. On the tool side,{" "}
-            <strong>GitHub, Slack, Google Drive, PostgreSQL</strong>, and 50+
-            others already have MCP integrations — many community-built.
-            Companies like <strong>Block, Apollo, and Replit</strong> are
-            building MCP integrations for their own platforms.
-          </p>
-          <p>
-            Official TypeScript and Python SDKs make it straightforward to build
-            your own integration in an afternoon.
-          </p>
-        </div>
+        <p className="mb-4 text-[14px] leading-[1.8] text-ink-light">
+          Anthropic created MCP and maintains the spec. Official TypeScript and
+          Python SDKs make it straightforward to build your own integration in
+          an afternoon.
+        </p>
+        <AdoptionGrid />
       </div>
     </SectionCard>
   );
