@@ -1,4 +1,6 @@
 import { SectionCard } from "@/components/layout/SectionCard";
+import { SecurityFlow } from "./diagrams/SecurityFlow";
+import { TokenCostVisual } from "./diagrams/TokenCostVisual";
 
 export function Decisions() {
   return (
@@ -81,6 +83,7 @@ export function Decisions() {
             users exactly what tools are being called.
           </p>
         </div>
+        <SecurityFlow />
       </div>
 
       {/* Cost Model */}
@@ -105,6 +108,7 @@ export function Decisions() {
             tool set regularly.
           </p>
         </div>
+        <TokenCostVisual />
       </div>
     </SectionCard>
   );
