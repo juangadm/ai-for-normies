@@ -89,6 +89,23 @@ export function ArchitectureSVG() {
           JSON-RPC
         </text>
 
+        {/* Animated message pulse */}
+        <circle r={4} fill="black" fillOpacity={0.15}>
+          <animateMotion
+            dur="3s"
+            repeatCount="indefinite"
+            path="M 170,70 L 286,70 L 390,70 L 506,70"
+          />
+        </circle>
+        <circle r={4} fill="black" fillOpacity={0.15}>
+          <animateMotion
+            dur="3s"
+            repeatCount="indefinite"
+            begin="1.5s"
+            path="M 506,70 L 390,70 L 286,70 L 170,70"
+          />
+        </circle>
+
         {/* Nodes */}
         {nodes.map((node) => {
           const isHovered = hovered === node.id;
