@@ -1,6 +1,7 @@
 import { SectionCard } from "@/components/layout/SectionCard";
 import { CalloutBox } from "@/components/shared/CalloutBox";
 import { ArchitectureSVG } from "./diagrams/ArchitectureSVG";
+import { PlaywrightExample } from "./diagrams/PlaywrightExample";
 import { TermDefinition } from "@/components/shared/TermDefinition";
 import { mcpGlossary } from "@/content/mcp/glossary";
 
@@ -76,6 +77,8 @@ export function Architecture() {
           </p>
         </div>
       </div>
+
+      <PlaywrightExample />
 
       <CalloutBox variant="insight" title="Key Insight for PMs">
         As a PM, you own the server layer. You decide what to expose (which
