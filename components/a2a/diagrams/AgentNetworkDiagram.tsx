@@ -3,54 +3,30 @@
 import { useState, useCallback } from "react";
 import { useInView } from "@/hooks/useInView";
 
-const clientAgents = ["Support Agent", "Triage Agent", "Escalation Agent"];
-const remoteAgents = ["Rebooking Agent", "Compensation Agent", "Hotel Agent", "Analytics Agent", "Billing Agent"];
+interface Agent {
+  label: string;
+  framework: string;
+  x: number;
+  y: number;
+}
 
-const SVG_W = 680;
-const SVG_H = 280;
-const CLIENT_X = 90;
-const REMOTE_X = 590;
-const HUB_X = 340;
-const HUB_Y = SVG_H / 2;
-
-const clientPositions = clientAgents.map((_, i) => ({
-  x: CLIENT_X,
-  y: 80 + i * 60,
-}));
-
-const remotePositions = remoteAgents.map((_, i) => ({
-  x: REMOTE_X,
-  y: 40 + i * 42,
-}));
-
-const beforeLines = clientPositions.flatMap((c, ci) =>
-  remotePositions.map((r, ri) => ({
-    x1: c.x + 70,
-    y1: c.y,
-    x2: r.x - 80,
-    y2: r.y,
-    key: `b-${ci}-${ri}`,
-  }))
-);
-
-const afterLines = [
-  ...clientPositions.map((c, i) => ({
-    x1: c.x + 70,
-    y1: c.y,
-    x2: HUB_X - 28,
-    y2: HUB_Y,
-    key: `a-client-${i}`,
-  })),
-  ...remotePositions.map((r, i) => ({
-    x1: HUB_X + 28,
-    y1: HUB_Y,
-    x2: r.x - 80,
-    y2: r.y,
-    key: `a-remote-${i}`,
-  })),
+const agents: Agent[] = [
+  { label: "Support Agent", framework: "ADK", x: 120, y: 80 },
+  { label: "Rebooking Agent", framework: "LangGraph", x: 440, y: 50 },
+  { label: "Compensation Agent", framework: "CrewAI", x: 500, y: 150 },
+  { label: "Hotel Agent", framework: "ADK", x: 420, y: 250 },
+  { label: "Triage Agent", framework: "LangGraph", x: 100, y: 200 },
 ];
 
-const MONO_FONT = { fontFamily: "Departure Mono, monospace", fontSize: "9px" };
+const SVG_W = 600;
+const SVG_H = 300;
+const MONO_FONT = { fontFamily: "Departure Mono, monospace" };
+
+// Pairs that need to communicate
+const connections = [
+  [0, 1], [0, 2], [0, 3], // Support → specialists
+  [4, 1], [4, 2],         // Triage → specialists
+];
 
 export function AgentNetworkDiagram() {
   const [mode, setMode] = useState<"before" | "after">("before");
@@ -61,12 +37,6 @@ export function AgentNetworkDiagram() {
   }, []);
 
   const isBefore = mode === "before";
-  const lineCount = isBefore
-    ? clientAgents.length * remoteAgents.length
-    : clientAgents.length + remoteAgents.length;
-  const label = isBefore
-    ? `${lineCount} custom protocols`
-    : "1 shared protocol";
 
   return (
     <div ref={ref} className="my-8">
@@ -76,116 +46,145 @@ export function AgentNetworkDiagram() {
         role="button"
         tabIndex={0}
         onKeyDown={(e) => e.key === "Enter" && toggle()}
-        aria-label={`Toggle between Before A2A and With A2A views. Currently showing: ${isBefore ? "Before A2A" : "With A2A"}`}
+        aria-label={`Toggle between siloed and A2A views. Currently: ${isBefore ? "Siloed" : "With A2A"}`}
       >
         <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="mx-auto w-full max-w-2xl">
-          {/* Before: spaghetti lines */}
-          {beforeLines.map((l, i) => (
-            <line
-              key={l.key}
-              x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}
-              stroke="black"
-              strokeOpacity={isBefore ? 0.12 : 0}
-              strokeWidth={0.5}
-              className="transition-all duration-500"
-              style={{
-                strokeDasharray: "400",
-                strokeDashoffset: visible && isBefore ? 0 : 400,
-                transitionDelay: visible && isBefore ? `${i * 30}ms` : "0ms",
-                transitionDuration: "600ms",
-              }}
-            />
-          ))}
+          {/* Before: connections with mismatched styles showing incompatibility */}
+          {connections.map(([from, to], i) => {
+            const a = agents[from];
+            const b = agents[to];
+            return (
+              <line
+                key={`before-${i}`}
+                x1={a.x} y1={a.y} x2={b.x} y2={b.y}
+                stroke="black"
+                strokeOpacity={isBefore ? 0.08 : 0}
+                strokeWidth={0.5}
+                strokeDasharray="3 5"
+                className="transition-all duration-500"
+                style={{
+                  strokeDashoffset: visible && isBefore ? 0 : 200,
+                  transitionDelay: visible && isBefore ? `${i * 50}ms` : "0ms",
+                  transitionDuration: "600ms",
+                }}
+              />
+            );
+          })}
 
-          {/* After: hub-spoke lines */}
-          {afterLines.map((l, i) => (
-            <line
-              key={l.key}
-              x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}
-              stroke="black"
-              strokeOpacity={!isBefore ? 0.2 : 0}
-              strokeWidth={1}
-              className="transition-all duration-500"
-              style={{
-                strokeDasharray: "300",
-                strokeDashoffset: !isBefore ? 0 : 300,
-                transitionDelay: !isBefore ? `${i * 60}ms` : "0ms",
-                transitionDuration: "500ms",
-              }}
-            />
-          ))}
+          {/* Before: red X marks on connections showing incompatibility */}
+          {isBefore && connections.map(([from, to], i) => {
+            const a = agents[from];
+            const b = agents[to];
+            const mx = (a.x + b.x) / 2;
+            const my = (a.y + b.y) / 2;
+            return (
+              <text
+                key={`x-${i}`}
+                x={mx} y={my}
+                textAnchor="middle"
+                fill="#dc2626"
+                fillOpacity={visible ? 0.5 : 0}
+                className="transition-opacity duration-500"
+                style={{ fontSize: "10px", transitionDelay: `${300 + i * 50}ms` }}
+              >
+                ✗
+              </text>
+            );
+          })}
 
-          {/* Animated dots traveling along hub lines when in "after" mode */}
-          {!isBefore &&
-            afterLines.map((l, i) => (
-              <circle key={`dot-${i}`} r={3} fill="#e67e22" fillOpacity={0.6}>
-                <animateMotion
-                  dur={`${2 + (i % 3) * 0.5}s`}
-                  repeatCount="indefinite"
-                  path={`M ${l.x1},${l.y1} L ${l.x2},${l.y2}`}
+          {/* After: clean lines with animated message dots */}
+          {connections.map(([from, to], i) => {
+            const a = agents[from];
+            const b = agents[to];
+            const path = `M ${a.x},${a.y} L ${b.x},${b.y}`;
+            return (
+              <g key={`after-${i}`}>
+                <line
+                  x1={a.x} y1={a.y} x2={b.x} y2={b.y}
+                  stroke="black"
+                  strokeOpacity={!isBefore ? 0.15 : 0}
+                  strokeWidth={1}
+                  className="transition-all duration-500"
+                  style={{
+                    strokeDasharray: "300",
+                    strokeDashoffset: !isBefore ? 0 : 300,
+                    transitionDelay: !isBefore ? `${i * 80}ms` : "0ms",
+                    transitionDuration: "500ms",
+                  }}
                 />
-              </circle>
-            ))}
+                {!isBefore && (
+                  <circle r={3} fill="#e67e22" fillOpacity={0.6}>
+                    <animateMotion
+                      dur={`${2 + (i % 3) * 0.5}s`}
+                      repeatCount="indefinite"
+                      path={path}
+                    />
+                  </circle>
+                )}
+              </g>
+            );
+          })}
 
-          {/* A2A hub node */}
-          <g style={{ opacity: !isBefore ? 1 : 0, transition: "opacity 400ms ease" }}>
-            <rect
-              x={HUB_X - 24} y={HUB_Y - 16}
-              width={48} height={32} rx={2}
-              fill="white" stroke="#e67e22" strokeOpacity={0.6} strokeWidth={1.5}
-            />
-            <text
-              x={HUB_X} y={HUB_Y + 4}
-              textAnchor="middle" fill="#e67e22"
-              style={{ fontFamily: "Departure Mono, monospace", fontSize: "11px" }}
-            >
-              A2A
-            </text>
-          </g>
-
-          {/* Client agent nodes */}
-          {clientAgents.map((name, i) => (
-            <g key={name}>
-              <rect
-                x={clientPositions[i].x - 60} y={clientPositions[i].y - 14}
-                width={130} height={28} rx={2}
-                fill="white" stroke="black" strokeOpacity={0.08}
-              />
-              <text
-                x={clientPositions[i].x + 5} y={clientPositions[i].y + 4}
-                textAnchor="middle" fill="black" style={MONO_FONT}
-              >
-                {name}
-              </text>
-            </g>
-          ))}
-
-          {/* Remote agent nodes */}
-          {remoteAgents.map((name, i) => (
-            <g key={name}>
-              <rect
-                x={remotePositions[i].x - 80} y={remotePositions[i].y - 14}
-                width={150} height={28} rx={2}
-                fill="white" stroke="black" strokeOpacity={0.08}
-              />
-              <text
-                x={remotePositions[i].x - 5} y={remotePositions[i].y + 4}
-                textAnchor="middle" fill="black" style={MONO_FONT}
-              >
-                {name}
-              </text>
-            </g>
-          ))}
+          {/* Agent nodes */}
+          {agents.map((agent) => {
+            const nodeW = 140;
+            const nodeH = 36;
+            return (
+              <g key={agent.label}>
+                {/* Silo box (before only) */}
+                {isBefore && (
+                  <rect
+                    x={agent.x - nodeW / 2 - 6} y={agent.y - nodeH / 2 - 6}
+                    width={nodeW + 12} height={nodeH + 12}
+                    rx={2}
+                    fill="none"
+                    stroke="#dc2626"
+                    strokeOpacity={visible ? 0.15 : 0}
+                    strokeDasharray="4 3"
+                    className="transition-opacity duration-500"
+                  />
+                )}
+                <rect
+                  x={agent.x - nodeW / 2} y={agent.y - nodeH / 2}
+                  width={nodeW} height={nodeH}
+                  rx={2}
+                  fill="white"
+                  stroke={!isBefore ? "#e67e22" : "black"}
+                  strokeOpacity={!isBefore ? 0.4 : 0.08}
+                  strokeWidth={!isBefore ? 1.5 : 1}
+                  className="transition-all duration-400"
+                />
+                <text
+                  x={agent.x} y={agent.y - 2}
+                  textAnchor="middle" fill="black"
+                  style={{ ...MONO_FONT, fontSize: "9px" }}
+                >
+                  {agent.label}
+                </text>
+                <text
+                  x={agent.x} y={agent.y + 10}
+                  textAnchor="middle"
+                  fill={isBefore ? "#9b9fa7" : "#e67e22"}
+                  className="transition-all duration-400"
+                  style={{ ...MONO_FONT, fontSize: "7px" }}
+                >
+                  {isBefore ? agent.framework : "A2A"}
+                </text>
+              </g>
+            );
+          })}
         </svg>
       </div>
 
-      {/* Counter + label */}
+      {/* Label */}
       <div className="mt-3 flex items-center justify-center gap-4">
         <button
           onClick={toggle}
           className="font-mono text-[11px] uppercase tracking-[0.15em] text-ink-light transition-colors hover:text-ink"
         >
-          {isBefore ? "Before A2A" : "With A2A"} — {label}
+          {isBefore
+            ? "Siloed — incompatible frameworks"
+            : "With A2A — one shared language"}
         </button>
         <span className="font-mono text-[10px] text-ink-muted">
           click to toggle
