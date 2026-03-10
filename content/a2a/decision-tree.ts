@@ -8,7 +8,7 @@ export interface DecisionNode {
 export const decisionNodes: DecisionNode[] = [
   {
     id: "q1",
-    question: "Agents from different teams/vendors?",
+    question: "Multiple robust, standalone agents?",
     yes: "USE_A2A",
     no: "q2",
   },

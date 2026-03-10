@@ -46,7 +46,7 @@ export function DecisionFlowMini() {
               padding: "14px 20px",
             }}
           >
-            Different teams?
+            Multiple agents?
           </div>
 
           <Arrow visible={visibleCount > 1} label="Yes" />

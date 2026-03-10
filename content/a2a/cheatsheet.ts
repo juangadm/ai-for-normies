@@ -37,7 +37,7 @@ export const a2aCheatSheet: CheatSheetQA[] = [
   {
     question: "When should a PM choose A2A over direct integration?",
     answer:
-      "When agents are owned by different teams or organizations, when you need multi-turn negotiation between agents, or when your agent ecosystem is growing and you want to avoid N×M custom integrations. If all agents are owned by one team, direct function calls are simpler.",
+      "When you have multiple robust, standalone agents that need to collaborate — even within the same team. A2A shines when agents are complex enough to have their own capabilities, state, and interfaces. If you only have simple function calls wrapped as agents, direct invocation is simpler. The key question is whether your agents are truly autonomous actors, not which team built them.",
   },
   {
     question: "How does A2A handle security?",
