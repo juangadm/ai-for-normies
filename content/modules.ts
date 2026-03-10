@@ -35,6 +35,22 @@ export const modules: ModuleMeta[] = [
     ],
   },
   {
+    slug: "a2a",
+    title: "A2A",
+    subtitle: "The Agent-to-Agent Protocol",
+    description: "How AI agents discover and collaborate with each other",
+    status: "live",
+    sectionCount: 5,
+    readMinutes: 14,
+    sections: [
+      { title: "What is A2A & Why It Exists" },
+      { title: "How It Works" },
+      { title: "The Protocol in Action" },
+      { title: "Decisions & Trade-offs" },
+      { title: "Quick Reference" },
+    ],
+  },
+  {
     slug: "rag",
     title: "RAG",
     subtitle: "Retrieval-Augmented Generation",
