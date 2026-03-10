@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { modules } from "@/content/modules";
 import { MCPModule } from "./MCPModule";
+import { A2AModule } from "./A2AModule";
 
 export default async function ModulePage({
   params,
@@ -15,6 +16,7 @@ export default async function ModulePage({
   if (!moduleMeta) notFound();
 
   if (module === "mcp") return <MCPModule />;
+  if (module === "a2a") return <A2AModule />;
 
   // Future modules will be added here
   notFound();
