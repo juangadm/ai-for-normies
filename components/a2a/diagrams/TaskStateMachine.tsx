@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useInView } from "@/hooks/useInView";
 
 interface StateNode {
   id: string;
@@ -39,28 +40,19 @@ const contextLabels: Record<number, string> = {
   4: "New itinerary ready: UA 892, seat 14A",
 };
 
+const SVG_W = 560;
+const SVG_H = 280;
+const MONO_FONT = { fontFamily: "Departure Mono, monospace", fontSize: "8px" };
+
+function getNodeColor(state: StateNode, activeIndex: number, stateIndex: number): string {
+  if (activeIndex >= stateIndex) return state.color.active;
+  return state.color.idle;
+}
+
 export function TaskStateMachine() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+  const [ref, visible] = useInView();
   const [activeIndex, setActiveIndex] = useState(-1);
   const [isPlaying, setIsPlaying] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setVisible(true);
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.3 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
 
   const play = useCallback(() => {
     if (isPlaying) return;
@@ -70,30 +62,25 @@ export function TaskStateMachine() {
 
   useEffect(() => {
     if (!isPlaying || activeIndex < 0) return;
+
     if (activeIndex >= states.length) {
-      timeoutRef.current = setTimeout(() => {
+      const timer = setTimeout(() => {
         setIsPlaying(false);
         setActiveIndex(-1);
       }, 1500);
-      return () => {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      };
+      return () => clearTimeout(timer);
     }
-    timeoutRef.current = setTimeout(() => {
+
+    const timer = setTimeout(() => {
       setActiveIndex((i) => i + 1);
     }, 1400);
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
+    return () => clearTimeout(timer);
   }, [isPlaying, activeIndex]);
-
-  const svgW = 560;
-  const svgH = 280;
 
   return (
     <div ref={ref} className="my-8">
       <div className="overflow-x-auto">
-        <svg viewBox={`0 0 ${svgW} ${svgH}`} className="mx-auto w-full max-w-2xl">
+        <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="mx-auto w-full max-w-2xl">
           {/* Transition paths */}
           {transitions.map((t, i) => {
             const from = states[t.from];
@@ -101,11 +88,12 @@ export function TaskStateMachine() {
             const isActive = activeIndex > t.from && activeIndex <= t.to + 1;
             const midX = (from.x + to.x) / 2;
             const midY = (from.y + to.y) / 2 - 20;
+            const pathD = `M ${from.x} ${from.y} Q ${midX} ${midY - 10} ${to.x} ${to.y}`;
 
             return (
               <g key={`t-${i}`}>
                 <path
-                  d={`M ${from.x} ${from.y} Q ${midX} ${midY - 10} ${to.x} ${to.y}`}
+                  d={pathD}
                   fill="none"
                   stroke="black"
                   strokeOpacity={visible ? 0.12 : 0}
@@ -113,29 +101,17 @@ export function TaskStateMachine() {
                   strokeDasharray="4 3"
                   className="transition-all duration-500"
                 />
-                {/* Animated dot along path */}
                 {isActive && (
                   <circle r={4} fill="#e67e22" fillOpacity={0.8}>
-                    <animateMotion
-                      dur="0.8s"
-                      repeatCount="1"
-                      fill="freeze"
-                      path={`M ${from.x} ${from.y} Q ${midX} ${midY - 10} ${to.x} ${to.y}`}
-                    />
+                    <animateMotion dur="0.8s" repeatCount="1" fill="freeze" path={pathD} />
                   </circle>
                 )}
-                {/* Transition label */}
                 <text
-                  x={midX}
-                  y={midY - 16}
-                  textAnchor="middle"
-                  fill="black"
+                  x={midX} y={midY - 16}
+                  textAnchor="middle" fill="black"
                   fillOpacity={visible ? 0.4 : 0}
                   className="transition-opacity duration-500"
-                  style={{
-                    fontFamily: "Departure Mono, monospace",
-                    fontSize: "8px",
-                  }}
+                  style={MONO_FONT}
                 >
                   {t.label}
                 </text>
@@ -147,84 +123,48 @@ export function TaskStateMachine() {
           {states.map((state, i) => {
             const isActive = activeIndex === i;
             const isPast = activeIndex > i;
-            const borderColor = isActive
-              ? state.color.active
-              : isPast
-                ? state.color.active
-                : state.color.idle;
-            const fillOpacity = isActive ? 0.08 : 0;
+            const borderColor = getNodeColor(state, activeIndex, i);
+            const textFill = (isActive || isPast) ? state.color.active : "#6b6f76";
 
             return (
               <g key={state.id}>
                 <rect
-                  x={state.x - 44}
-                  y={state.y - 18}
-                  width={88}
-                  height={36}
-                  rx={18}
+                  x={state.x - 44} y={state.y - 18}
+                  width={88} height={36} rx={18}
                   fill={isActive ? state.color.active : "white"}
                   fillOpacity={isActive ? 0.08 : 1}
                   stroke={borderColor}
                   strokeWidth={isActive ? 2 : 1}
                   className="transition-all duration-300"
                 />
-                {/* Pulse ring for active state */}
                 {isActive && (
                   <rect
-                    x={state.x - 48}
-                    y={state.y - 22}
-                    width={96}
-                    height={44}
-                    rx={22}
-                    fill="none"
-                    stroke={state.color.active}
-                    strokeWidth={1}
-                    opacity={0.3}
+                    x={state.x - 48} y={state.y - 22}
+                    width={96} height={44} rx={22}
+                    fill="none" stroke={state.color.active} strokeWidth={1} opacity={0.3}
                   >
-                    <animate
-                      attributeName="opacity"
-                      values="0.3;0.1;0.3"
-                      dur="1.5s"
-                      repeatCount="indefinite"
-                    />
-                    <animate
-                      attributeName="stroke-width"
-                      values="1;2;1"
-                      dur="1.5s"
-                      repeatCount="indefinite"
-                    />
+                    <animate attributeName="opacity" values="0.3;0.1;0.3" dur="1.5s" repeatCount="indefinite" />
+                    <animate attributeName="stroke-width" values="1;2;1" dur="1.5s" repeatCount="indefinite" />
                   </rect>
                 )}
                 {state.label.includes("\n") ? (
                   state.label.split("\n").map((line, li) => (
                     <text
                       key={li}
-                      x={state.x}
-                      y={state.y + (li - 0.5) * 11 + 2}
-                      textAnchor="middle"
-                      fill={isActive || isPast ? state.color.active : "#6b6f76"}
+                      x={state.x} y={state.y + (li - 0.5) * 11 + 2}
+                      textAnchor="middle" fill={textFill}
                       className="transition-all duration-300"
-                      style={{
-                        fontFamily: "Departure Mono, monospace",
-                        fontSize: "8px",
-                        fontWeight: isActive ? 600 : 400,
-                      }}
+                      style={{ ...MONO_FONT, fontWeight: isActive ? 600 : 400 }}
                     >
                       {line}
                     </text>
                   ))
                 ) : (
                   <text
-                    x={state.x}
-                    y={state.y + 4}
-                    textAnchor="middle"
-                    fill={isActive || isPast ? state.color.active : "#6b6f76"}
+                    x={state.x} y={state.y + 4}
+                    textAnchor="middle" fill={textFill}
                     className="transition-all duration-300"
-                    style={{
-                      fontFamily: "Departure Mono, monospace",
-                      fontSize: "8px",
-                      fontWeight: isActive ? 600 : 400,
-                    }}
+                    style={{ ...MONO_FONT, fontWeight: isActive ? 600 : 400 }}
                   >
                     {state.label}
                   </text>

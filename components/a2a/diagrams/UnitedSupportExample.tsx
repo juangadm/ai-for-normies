@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { useInView } from "@/hooks/useInView";
 import {
   passengerMessage,
   unitedSteps,
@@ -16,25 +17,16 @@ const tagColors: Record<string, string> = {
 };
 
 export function UnitedSupportExample() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [phase, setPhase] = useState(-1); // -1 = not started
+  const [ref, visible] = useInView();
+  const [phase, setPhase] = useState(-1);
   const [typedText, setTypedText] = useState("");
 
+  // Start phase 0 when the component becomes visible
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setPhase(0);
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.3 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
+    if (visible && phase === -1) {
+      setPhase(0);
+    }
+  }, [visible, phase]);
 
   // Typing effect for phase 0
   useEffect(() => {

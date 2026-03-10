@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useInView } from "@/hooks/useInView";
 
 const bars = [
   { label: "1 agent + MCP tools", width: 20, annotation: "80% of use cases" },
@@ -9,24 +9,7 @@ const bars = [
 ];
 
 export function ComplexitySpectrum() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setVisible(true);
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.4 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
+  const [ref, visible] = useInView(0.4);
 
   return (
     <div ref={ref} className="my-8 space-y-4">

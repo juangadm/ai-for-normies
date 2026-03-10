@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useInView } from "@/hooks/useInView";
 
 const categories = [
   {
@@ -17,28 +17,10 @@ const categories = [
   },
 ];
 
+const COLS = 5;
+
 export function A2AAdoptionGrid() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setVisible(true);
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.3 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-  const cols = 5;
-  let itemIndex = 0;
+  const [ref, visible] = useInView();
 
   return (
     <div ref={ref} className="space-y-4">
@@ -49,8 +31,7 @@ export function A2AAdoptionGrid() {
           </div>
           <div className="flex flex-wrap gap-2">
             {cat.names.map((name, colIdx) => {
-              const delay = (rowIdx * cols + colIdx) * 40;
-              itemIndex++;
+              const delay = (rowIdx * COLS + colIdx) * 40;
               return (
                 <span
                   key={name}

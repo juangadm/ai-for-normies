@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useInView } from "@/hooks/useInView";
 
 const phases = [
   { label: "AGENT CARDS", duration: 1800 },
@@ -23,28 +24,38 @@ const specialists: AgentNode[] = [
   { id: "hotel", label: "Hotel Voucher", x: 380, y: 280 },
 ];
 
+const SVG_W = 560;
+const SVG_H = 340;
+const MONO_FONT = { fontFamily: "Departure Mono, monospace", fontSize: "9px" };
+
+const STATUS_COLORS: Record<string, string> = {
+  COMPLETED: "#22c55e",
+  INPUT_REQ: "#f59e0b",
+  WORKING: "#2dd4bf",
+};
+
+function getStatusLabels(currentPhase: number): Record<string, string> {
+  const labels: Record<string, string> = {};
+
+  if (currentPhase >= 4) {
+    // Phase 4+: all completed
+    for (const s of specialists) labels[s.id] = "COMPLETED";
+  } else if (currentPhase >= 2) {
+    // Phase 2-3: all working, rebooking needs input
+    for (const s of specialists) labels[s.id] = "WORKING";
+    labels["rebooking"] = "INPUT_REQ";
+  } else if (currentPhase >= 1) {
+    // Phase 1: all working
+    for (const s of specialists) labels[s.id] = "WORKING";
+  }
+
+  return labels;
+}
+
 export function UnitedOrchestrationFlow() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+  const [ref, visible] = useInView(0.2);
   const [currentPhase, setCurrentPhase] = useState(-1);
   const [isPlaying, setIsPlaying] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setVisible(true);
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.2 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
 
   // Auto-play on first visibility
   useEffect(() => {
@@ -52,7 +63,7 @@ export function UnitedOrchestrationFlow() {
       const timer = setTimeout(() => startPlayback(), 500);
       return () => clearTimeout(timer);
     }
-  }, [visible]);
+  }, [visible]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const startPlayback = useCallback(() => {
     if (isPlaying) return;
@@ -62,20 +73,16 @@ export function UnitedOrchestrationFlow() {
 
   useEffect(() => {
     if (!isPlaying || currentPhase < 0) return;
+
     if (currentPhase >= phases.length) {
-      timeoutRef.current = setTimeout(() => {
-        setIsPlaying(false);
-      }, 1500);
-      return () => {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      };
+      const timer = setTimeout(() => setIsPlaying(false), 1500);
+      return () => clearTimeout(timer);
     }
-    timeoutRef.current = setTimeout(() => {
+
+    const timer = setTimeout(() => {
       setCurrentPhase((p) => p + 1);
     }, phases[currentPhase].duration);
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
+    return () => clearTimeout(timer);
   }, [isPlaying, currentPhase]);
 
   const replay = useCallback(() => {
@@ -87,26 +94,7 @@ export function UnitedOrchestrationFlow() {
     }, 100);
   }, []);
 
-  const svgW = 560;
-  const svgH = 340;
-
-  const statusLabels: Record<string, string> = {};
-  if (currentPhase >= 1) {
-    specialists.forEach((s) => {
-      statusLabels[s.id] = "WORKING";
-    });
-  }
-  if (currentPhase >= 2) {
-    statusLabels["rebooking"] = "INPUT_REQ";
-  }
-  if (currentPhase >= 3) {
-    statusLabels["rebooking"] = "INPUT_REQ";
-  }
-  if (currentPhase >= 4) {
-    specialists.forEach((s) => {
-      statusLabels[s.id] = "COMPLETED";
-    });
-  }
+  const statusLabels = getStatusLabels(currentPhase);
 
   return (
     <div ref={ref} className="my-8">
@@ -127,18 +115,14 @@ export function UnitedOrchestrationFlow() {
       </div>
 
       <div className="overflow-x-auto">
-        <svg viewBox={`0 0 ${svgW} ${svgH}`} className="mx-auto w-full max-w-2xl">
+        <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="mx-auto w-full max-w-2xl">
           {/* Phase 1: Discovery lines (dashed) */}
           {specialists.map((spec, i) => (
             <line
               key={`disc-${spec.id}`}
-              x1={supportAgent.x + 50}
-              y1={supportAgent.y}
-              x2={spec.x - 40}
-              y2={spec.y}
-              stroke="black"
-              strokeOpacity={0.15}
-              strokeWidth={1}
+              x1={supportAgent.x + 50} y1={supportAgent.y}
+              x2={spec.x - 40} y2={spec.y}
+              stroke="black" strokeOpacity={0.15} strokeWidth={1}
               strokeDasharray="4 3"
               className="transition-all duration-600"
               style={{
@@ -150,50 +134,40 @@ export function UnitedOrchestrationFlow() {
           ))}
 
           {/* Phase 2: Solid lines + task dots traveling outward */}
-          {specialists.map((spec, i) => (
-            <g key={`task-${spec.id}`}>
-              <line
-                x1={supportAgent.x + 50}
-                y1={supportAgent.y}
-                x2={spec.x - 40}
-                y2={spec.y}
-                stroke="black"
-                strokeOpacity={currentPhase >= 1 ? 0.2 : 0}
-                strokeWidth={1.5}
-                className="transition-all duration-500"
-              />
-              {currentPhase === 1 && (
-                <circle r={4} fill="#e67e22" fillOpacity={0.7}>
-                  <animateMotion
-                    dur="1s"
-                    repeatCount="1"
-                    fill="freeze"
-                    path={`M ${supportAgent.x + 50} ${supportAgent.y} L ${spec.x - 40} ${spec.y}`}
-                  />
-                </circle>
-              )}
-            </g>
-          ))}
-
-          {/* Phase 3: Message dot from rebooking back to support, then return */}
-          {currentPhase === 2 && (
-            <>
-              <circle r={4} fill="#f59e0b" fillOpacity={0.8}>
-                <animateMotion
-                  dur="1s"
-                  repeatCount="1"
-                  fill="freeze"
-                  path={`M ${specialists[0].x - 40} ${specialists[0].y} L ${supportAgent.x + 50} ${supportAgent.y}`}
+          {specialists.map((spec, i) => {
+            const path = `M ${supportAgent.x + 50} ${supportAgent.y} L ${spec.x - 40} ${spec.y}`;
+            return (
+              <g key={`task-${spec.id}`}>
+                <line
+                  x1={supportAgent.x + 50} y1={supportAgent.y}
+                  x2={spec.x - 40} y2={spec.y}
+                  stroke="black"
+                  strokeOpacity={currentPhase >= 1 ? 0.2 : 0}
+                  strokeWidth={1.5}
+                  className="transition-all duration-500"
                 />
-              </circle>
-            </>
+                {currentPhase === 1 && (
+                  <circle r={4} fill="#e67e22" fillOpacity={0.7}>
+                    <animateMotion dur="1s" repeatCount="1" fill="freeze" path={path} />
+                  </circle>
+                )}
+              </g>
+            );
+          })}
+
+          {/* Phase 3: Message dot from rebooking back to support */}
+          {currentPhase === 2 && (
+            <circle r={4} fill="#f59e0b" fillOpacity={0.8}>
+              <animateMotion
+                dur="1s" repeatCount="1" fill="freeze"
+                path={`M ${specialists[0].x - 40} ${specialists[0].y} L ${supportAgent.x + 50} ${supportAgent.y}`}
+              />
+            </circle>
           )}
           {currentPhase === 3 && (
             <circle r={4} fill="#e67e22" fillOpacity={0.7}>
               <animateMotion
-                dur="0.8s"
-                repeatCount="1"
-                fill="freeze"
+                dur="0.8s" repeatCount="1" fill="freeze"
                 path={`M ${supportAgent.x + 50} ${supportAgent.y} L ${specialists[0].x - 40} ${specialists[0].y}`}
               />
             </circle>
@@ -202,16 +176,9 @@ export function UnitedOrchestrationFlow() {
           {/* Phase 4: Artifact icons traveling back */}
           {currentPhase >= 4 &&
             specialists.map((spec, i) => (
-              <circle
-                key={`art-${spec.id}`}
-                r={4}
-                fill="#22c55e"
-                fillOpacity={0.7}
-              >
+              <circle key={`art-${spec.id}`} r={4} fill="#22c55e" fillOpacity={0.7}>
                 <animateMotion
-                  dur="1s"
-                  repeatCount="1"
-                  fill="freeze"
+                  dur="1s" repeatCount="1" fill="freeze"
                   path={`M ${spec.x - 40} ${spec.y} L ${supportAgent.x + 50} ${supportAgent.y}`}
                   begin={`${i * 200}ms`}
                 />
@@ -221,22 +188,13 @@ export function UnitedOrchestrationFlow() {
           {/* Support Agent node */}
           <g>
             <rect
-              x={supportAgent.x - 52}
-              y={supportAgent.y - 18}
-              width={104}
-              height={36}
-              rx={3}
-              fill="white"
-              stroke="#e67e22"
-              strokeOpacity={0.5}
-              strokeWidth={1.5}
+              x={supportAgent.x - 52} y={supportAgent.y - 18}
+              width={104} height={36} rx={3}
+              fill="white" stroke="#e67e22" strokeOpacity={0.5} strokeWidth={1.5}
             />
             <text
-              x={supportAgent.x}
-              y={supportAgent.y + 4}
-              textAnchor="middle"
-              fill="#1d1d1f"
-              style={{ fontFamily: "Departure Mono, monospace", fontSize: "9px" }}
+              x={supportAgent.x} y={supportAgent.y + 4}
+              textAnchor="middle" fill="#1d1d1f" style={MONO_FONT}
             >
               {supportAgent.label}
             </text>
@@ -245,56 +203,32 @@ export function UnitedOrchestrationFlow() {
           {/* Specialist nodes */}
           {specialists.map((spec) => {
             const status = statusLabels[spec.id];
-            const statusColor =
-              status === "COMPLETED"
-                ? "#22c55e"
-                : status === "INPUT_REQ"
-                  ? "#f59e0b"
-                  : status === "WORKING"
-                    ? "#2dd4bf"
-                    : "#9b9fa7";
+            const statusColor = STATUS_COLORS[status] || "#9b9fa7";
 
             return (
               <g key={spec.id}>
                 <rect
-                  x={spec.x - 48}
-                  y={spec.y - 18}
-                  width={96}
-                  height={36}
-                  rx={3}
-                  fill="white"
-                  stroke="black"
-                  strokeOpacity={0.08}
-                  strokeWidth={1}
+                  x={spec.x - 48} y={spec.y - 18}
+                  width={96} height={36} rx={3}
+                  fill="white" stroke="black" strokeOpacity={0.08} strokeWidth={1}
                 />
                 <text
-                  x={spec.x}
-                  y={spec.y + 4}
-                  textAnchor="middle"
-                  fill="black"
-                  style={{ fontFamily: "Departure Mono, monospace", fontSize: "9px" }}
+                  x={spec.x} y={spec.y + 4}
+                  textAnchor="middle" fill="black" style={MONO_FONT}
                 >
                   {spec.label}
                 </text>
-                {/* Status badge */}
                 {status && (
                   <g>
                     <rect
-                      x={spec.x - 28}
-                      y={spec.y + 22}
-                      width={56}
-                      height={16}
-                      rx={8}
-                      fill={statusColor}
-                      fillOpacity={0.15}
-                      stroke={statusColor}
-                      strokeWidth={0.5}
+                      x={spec.x - 28} y={spec.y + 22}
+                      width={56} height={16} rx={8}
+                      fill={statusColor} fillOpacity={0.15}
+                      stroke={statusColor} strokeWidth={0.5}
                     />
                     <text
-                      x={spec.x}
-                      y={spec.y + 33}
-                      textAnchor="middle"
-                      fill={statusColor}
+                      x={spec.x} y={spec.y + 33}
+                      textAnchor="middle" fill={statusColor}
                       style={{
                         fontFamily: "Departure Mono, monospace",
                         fontSize: "7px",
@@ -305,10 +239,8 @@ export function UnitedOrchestrationFlow() {
                     </text>
                     {status === "COMPLETED" && (
                       <text
-                        x={spec.x + 34}
-                        y={spec.y + 33}
-                        textAnchor="middle"
-                        fill={statusColor}
+                        x={spec.x + 34} y={spec.y + 33}
+                        textAnchor="middle" fill={statusColor}
                         style={{ fontSize: "8px" }}
                       >
                         ✓
@@ -323,10 +255,8 @@ export function UnitedOrchestrationFlow() {
           {/* Phase 3 annotation: "Window or aisle?" */}
           {(currentPhase === 2 || currentPhase === 3) && (
             <text
-              x={370}
-              y={38}
-              textAnchor="middle"
-              fill="#f59e0b"
+              x={370} y={38}
+              textAnchor="middle" fill="#f59e0b"
               style={{
                 fontFamily: "Departure Mono, monospace",
                 fontSize: "9px",
