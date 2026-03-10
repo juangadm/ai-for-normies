@@ -26,10 +26,10 @@ export function WhatIsA2A() {
             term="Agent-to-Agent Protocol"
             definition={a2aGlossary.A2A}
           />{" "}
-          is an open standard that lets AI agents discover each other and
-          collaborate on tasks. Instead of building custom integrations between
-          every pair of agents, A2A provides one protocol for discovery,
-          delegation, and delivery.
+          is an open standard that gives AI agents a common language to discover
+          each other and collaborate — regardless of what framework they&apos;re
+          built with, what language they&apos;re written in, or where
+          they&apos;re deployed.
         </p>
       </div>
 
@@ -38,9 +38,10 @@ export function WhatIsA2A() {
         Throughout this page, we&apos;ll make this concrete. Imagine United
         Airlines is building an AI-powered customer support system. A
         passenger&apos;s flight gets canceled — the support agent needs to
-        coordinate with a Rebooking Agent, a Compensation Agent, and a Hotel
-        Voucher Agent, each owned by different internal teams. What does that
-        architecture look like?
+        coordinate with a Rebooking Agent (built with LangGraph), a Compensation
+        Agent (built with CrewAI), and a Hotel Voucher Agent (running on Google
+        ADK). Three different frameworks, three opaque systems. How do they talk
+        to each other?
       </CalloutBox>
 
       {/* The Problem */}
@@ -50,20 +51,27 @@ export function WhatIsA2A() {
         </h3>
         <div className="space-y-4 text-[14px] leading-[1.8] text-ink-light">
           <p>
-            Without a standard, connecting agents is a{" "}
-            <strong>multiplication problem</strong>. United&apos;s support team
-            has 3 orchestrator agents and 5 specialist agents. Every orchestrator
-            needs its own connector for every specialist — that&apos;s 3 &times;
-            5 = <strong>15 custom protocols</strong> to build and maintain.
+            Most agent systems <strong>operate in silos</strong>. They&apos;re
+            built on incompatible frameworks, expose custom APIs, and lack any
+            shared protocol for communication. United&apos;s Rebooking Agent runs
+            on LangGraph. The Compensation Agent uses CrewAI. The Hotel Agent is
+            on Google ADK. Each is a{" "}
+            <strong>black box</strong> — you can&apos;t see inside it, and you
+            shouldn&apos;t have to.
           </p>
           <p>
-            Each integration has its own message format, discovery logic,
-            authentication, and error handling. When one agent updates its
-            interface, every integration that touches it breaks.
+            But these agents need to collaborate. The Support Agent needs to
+            delegate tasks to all three specialists, track progress, handle
+            back-and-forth negotiation, and collect results. Without a standard,
+            each connection requires fragile, custom integration code that breaks
+            whenever either side changes.
           </p>
           <p>
-            This is where agent ecosystems were before A2A — every team building
-            bespoke bridges between their agents.
+            This isn&apos;t the same problem MCP solves. MCP standardizes how an
+            agent accesses tools and data — like a universal plug. The A2A
+            problem is different: these are{" "}
+            <strong>autonomous, opaque agents</strong> that need to have a
+            conversation, not just call a function.
           </p>
         </div>
       </div>
@@ -77,11 +85,12 @@ export function WhatIsA2A() {
         </h3>
         <div className="space-y-4 text-[14px] leading-[1.8] text-ink-light">
           <p>
-            A2A turns that multiplication into <strong>addition</strong>. Each
-            agent publishes a card describing what it can do. Any agent can read
-            that card and start a collaboration. 3 orchestrators + 5 specialists
-            = <strong>8 A2A implementations instead of 15</strong> custom
-            protocols.
+            A2A gives agents a <strong>common language</strong> — like HTTP for
+            web servers. It doesn&apos;t matter what framework an agent uses
+            internally. If it speaks A2A, it can discover other agents, delegate
+            tasks, negotiate through multi-turn conversations, and collect
+            results. The protocol respects opacity: agents collaborate without
+            exposing their internal memory, logic, or tool implementations.
           </p>
           <p>
             Google created A2A as the natural complement to MCP. Where MCP
@@ -92,7 +101,7 @@ export function WhatIsA2A() {
           <p>
             Think of MCP as plugging in a USB drive — your agent gets access to
             files. A2A is joining a conference call — your agent collaborates
-            with peers.
+            with opaque peers who have their own capabilities and autonomy.
           </p>
         </div>
       </div>
