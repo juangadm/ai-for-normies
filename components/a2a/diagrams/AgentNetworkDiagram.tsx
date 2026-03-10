@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 
-const orchestrators = ["Support", "Sales", "Ops"];
-const specialists = ["Rebooking", "Compensation", "Hotel", "Analytics", "Billing"];
+const clientAgents = ["Support Agent", "Triage Agent", "Escalation Agent"];
+const remoteAgents = ["Rebooking Agent", "Compensation Agent", "Hotel Agent", "Analytics Agent", "Billing Agent"];
 
 export function AgentNetworkDiagram() {
   const [mode, setMode] = useState<"before" | "after">("before");
@@ -30,57 +30,57 @@ export function AgentNetworkDiagram() {
     setMode((m) => (m === "before" ? "after" : "before"));
   }, []);
 
-  const svgW = 600;
+  const svgW = 680;
   const svgH = 280;
-  const orchX = 60;
-  const specX = 540;
-  const hubX = 300;
-  const orchSpacing = 60;
-  const specSpacing = 42;
-  const orchStartY = 80;
-  const specStartY = 40;
+  const clientX = 90;
+  const remoteX = 590;
+  const hubX = 340;
+  const clientSpacing = 60;
+  const remoteSpacing = 42;
+  const clientStartY = 80;
+  const remoteStartY = 40;
 
-  const orchPositions = orchestrators.map((_, i) => ({
-    x: orchX,
-    y: orchStartY + i * orchSpacing,
+  const clientPositions = clientAgents.map((_, i) => ({
+    x: clientX,
+    y: clientStartY + i * clientSpacing,
   }));
-  const specPositions = specialists.map((_, i) => ({
-    x: specX,
-    y: specStartY + i * specSpacing,
+  const remotePositions = remoteAgents.map((_, i) => ({
+    x: remoteX,
+    y: remoteStartY + i * remoteSpacing,
   }));
   const hubY = svgH / 2;
 
-  const beforeLines = orchPositions.flatMap((o, oi) =>
-    specPositions.map((s, si) => ({
-      x1: o.x + 50,
-      y1: o.y,
-      x2: s.x - 60,
-      y2: s.y,
-      key: `b-${oi}-${si}`,
+  const beforeLines = clientPositions.flatMap((c, ci) =>
+    remotePositions.map((r, ri) => ({
+      x1: c.x + 70,
+      y1: c.y,
+      x2: r.x - 80,
+      y2: r.y,
+      key: `b-${ci}-${ri}`,
     }))
   );
 
   const afterLines = [
-    ...orchPositions.map((o, i) => ({
-      x1: o.x + 50,
-      y1: o.y,
+    ...clientPositions.map((c, i) => ({
+      x1: c.x + 70,
+      y1: c.y,
       x2: hubX - 28,
       y2: hubY,
-      key: `a-orch-${i}`,
+      key: `a-client-${i}`,
     })),
-    ...specPositions.map((s, i) => ({
+    ...remotePositions.map((r, i) => ({
       x1: hubX + 28,
       y1: hubY,
-      x2: s.x - 60,
-      y2: s.y,
-      key: `a-spec-${i}`,
+      x2: r.x - 80,
+      y2: r.y,
+      key: `a-remote-${i}`,
     })),
   ];
 
   const isBefore = mode === "before";
   const lineCount = isBefore
-    ? orchestrators.length * specialists.length
-    : orchestrators.length + specialists.length;
+    ? clientAgents.length * remoteAgents.length
+    : clientAgents.length + remoteAgents.length;
   const label = isBefore
     ? `${lineCount} custom protocols`
     : "1 shared protocol";
@@ -182,15 +182,15 @@ export function AgentNetworkDiagram() {
             </text>
           </g>
 
-          {/* Orchestrator nodes */}
-          {orchestrators.map((name, i) => {
-            const pos = orchPositions[i];
+          {/* Client agent nodes */}
+          {clientAgents.map((name, i) => {
+            const pos = clientPositions[i];
             return (
               <g key={name}>
                 <rect
-                  x={pos.x - 40}
+                  x={pos.x - 60}
                   y={pos.y - 14}
-                  width={90}
+                  width={130}
                   height={28}
                   rx={2}
                   fill="white"
@@ -204,7 +204,7 @@ export function AgentNetworkDiagram() {
                   fill="black"
                   style={{
                     fontFamily: "Departure Mono, monospace",
-                    fontSize: "10px",
+                    fontSize: "9px",
                   }}
                 >
                   {name}
@@ -213,15 +213,15 @@ export function AgentNetworkDiagram() {
             );
           })}
 
-          {/* Specialist nodes */}
-          {specialists.map((name, i) => {
-            const pos = specPositions[i];
+          {/* Remote agent nodes */}
+          {remoteAgents.map((name, i) => {
+            const pos = remotePositions[i];
             return (
               <g key={name}>
                 <rect
-                  x={pos.x - 60}
+                  x={pos.x - 80}
                   y={pos.y - 14}
-                  width={110}
+                  width={150}
                   height={28}
                   rx={2}
                   fill="white"
@@ -235,7 +235,7 @@ export function AgentNetworkDiagram() {
                   fill="black"
                   style={{
                     fontFamily: "Departure Mono, monospace",
-                    fontSize: "10px",
+                    fontSize: "9px",
                   }}
                 >
                   {name}
