@@ -20,8 +20,9 @@ export function Decisions() {
         <ul className="space-y-2 text-[14px] leading-[1.8] text-ink-light">
           <li className="flex gap-2">
             <span className="shrink-0 text-accent">+</span>
-            Agents are owned by different teams or organizations — like
-            United&apos;s separate support, rebooking, and compensation teams
+            You have multiple robust, standalone agents — even within the same
+            team. United&apos;s Rebooking, Compensation, and Hotel agents each
+            have their own capabilities, state, and interfaces
           </li>
           <li className="flex gap-2">
             <span className="shrink-0 text-accent">+</span>
@@ -49,7 +50,8 @@ export function Decisions() {
         <ul className="space-y-2 text-[14px] leading-[1.8] text-ink-light">
           <li className="flex gap-2">
             <span className="shrink-0 text-ink-muted">&minus;</span>
-            All agents are owned by one team — just call functions directly
+            Your &ldquo;agents&rdquo; are thin wrappers around function calls —
+            not robust autonomous actors
           </li>
           <li className="flex gap-2">
             <span className="shrink-0 text-ink-muted">&minus;</span>
@@ -99,16 +101,19 @@ export function Decisions() {
         <div className="space-y-4 text-[14px] leading-[1.8] text-ink-light">
           <p>
             A single agent with MCP tools handles the vast majority of use
-            cases. A2A earns its complexity when you cross organizational
-            boundaries — when the agents you need to coordinate with are built
-            and maintained by different teams, with different release cycles,
-            different auth systems, and different data ownership.
+            cases. A2A earns its complexity when you have multiple robust agents
+            that need to collaborate — agents with their own capabilities,
+            state machines, and interfaces. This can happen across teams, across
+            organizations, or even within the same team if the agents are
+            complex enough to warrant independence.
           </p>
           <p>
-            Frame this for your team: the right question isn&apos;t &ldquo;should
-            we use A2A?&rdquo; — it&apos;s &ldquo;do our agents cross
-            organizational boundaries?&rdquo; If yes, A2A prevents the
-            integration spaghetti. If no, direct calls are simpler and faster.
+            Frame this for your team: the right question isn&apos;t &ldquo;do
+            our agents come from different teams?&rdquo; — it&apos;s &ldquo;are
+            our agents truly autonomous actors that need to discover and
+            negotiate with each other?&rdquo; If yes, A2A prevents the
+            integration spaghetti. If they&apos;re just functions with a fancy
+            name, direct calls are simpler.
           </p>
         </div>
         <ComplexitySpectrum />
