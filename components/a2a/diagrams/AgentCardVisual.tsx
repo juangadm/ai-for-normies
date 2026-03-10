@@ -1,27 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
+import { useInView } from "@/hooks/useInView";
 
 export function AgentCardVisual() {
   const [flipped, setFlipped] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setVisible(true);
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.3 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
+  const [ref, visible] = useInView();
 
   return (
     <div ref={ref} className="my-8">
@@ -41,7 +25,6 @@ export function AgentCardVisual() {
         onKeyDown={(e) => e.key === "Enter" && setFlipped((f) => !f)}
         aria-label="Agent Card — hover or click to flip"
       >
-        {/* A4 aspect ratio: 1 : 1.414 */}
         <div
           className="relative w-full"
           style={{
@@ -56,7 +39,6 @@ export function AgentCardVisual() {
             className="absolute inset-0 flex flex-col border border-border bg-white px-7 py-6"
             style={{ backfaceVisibility: "hidden" }}
           >
-            {/* Header */}
             <div className="mb-5 flex items-center gap-4">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center border border-border font-mono text-[16px] text-ink-light">
                 RA
@@ -71,14 +53,12 @@ export function AgentCardVisual() {
               </div>
             </div>
 
-            {/* Description */}
             <p className="mb-6 text-[14px] leading-[1.8] text-ink-light">
               Finds alternative flights and rebooks passengers on canceled or
               delayed routes. Supports multi-turn negotiation for seat
               preferences and connection constraints.
             </p>
 
-            {/* Skills */}
             <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-muted">
               Skills
             </div>
@@ -95,7 +75,6 @@ export function AgentCardVisual() {
               )}
             </div>
 
-            {/* Endpoint preview */}
             <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-muted">
               Endpoint
             </div>
@@ -120,37 +99,18 @@ export function AgentCardVisual() {
               Agent Card Details
             </div>
             <div className="space-y-4">
-              <Field
-                label="Endpoint"
-                value="https://agents.united.com/rebooking"
-              />
-              <Field
-                label="Authentication"
-                value="OAuth 2.0 (scope: flights.rebook)"
-              />
-              <Field
-                label="Skills"
-                value="search-flights, rebook-passenger, check-availability"
-              />
-              <Field
-                label="Supported Input"
-                value="text/plain, application/json"
-              />
-              <Field
-                label="Supported Output"
-                value="application/json, application/pdf"
-              />
+              <Field label="Endpoint" value="https://agents.united.com/rebooking" />
+              <Field label="Authentication" value="OAuth 2.0 (scope: flights.rebook)" />
+              <Field label="Skills" value="search-flights, rebook-passenger, check-availability" />
+              <Field label="Supported Input" value="text/plain, application/json" />
+              <Field label="Supported Output" value="application/json, application/pdf" />
               <Field label="Protocol Version" value="1.2.0" />
-              <Field
-                label="Published At"
-                value="/.well-known/agent.json"
-              />
+              <Field label="Published At" value="/.well-known/agent.json" />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Caption */}
       <p
         className="mt-4 text-center text-[13px] leading-[1.7] text-ink-light transition-opacity duration-500"
         style={{ opacity: visible ? 1 : 0, transitionDelay: "300ms" }}

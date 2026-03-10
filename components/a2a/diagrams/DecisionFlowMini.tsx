@@ -1,37 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useStaggerReveal } from "@/hooks/useInView";
+import { FlowArrow } from "@/components/shared/FlowArrow";
+
+const DIAMOND_CLIP = "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)";
 
 export function DecisionFlowMini() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visibleCount, setVisibleCount] = useState(0);
+  const [ref, visibleCount] = useStaggerReveal(7, 250);
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          let count = 0;
-          const interval = setInterval(() => {
-            count++;
-            setVisibleCount(count);
-            if (count >= 7) clearInterval(interval);
-          }, 250);
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.3 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-  const show = (i: number) => ({
-    opacity: visibleCount > i ? 1 : 0,
-    transform: visibleCount > i ? "translateY(0)" : "translateY(6px)",
-    transition: "all 300ms ease",
-  });
+  function show(i: number) {
+    return {
+      opacity: visibleCount > i ? 1 : 0,
+      transform: visibleCount > i ? "translateY(0)" : "translateY(6px)",
+      transition: "all 300ms ease",
+    };
+  }
 
   return (
     <div ref={ref} className="my-6 overflow-x-auto">
@@ -40,24 +23,16 @@ export function DecisionFlowMini() {
         <div className="flex items-center gap-0">
           <div
             className="shrink-0 border border-border px-3 py-1.5 font-mono text-[10px] text-ink"
-            style={{
-              ...show(0),
-              clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
-              padding: "14px 20px",
-            }}
+            style={{ ...show(0), clipPath: DIAMOND_CLIP, padding: "14px 20px" }}
           >
             Multiple agents?
           </div>
 
-          <Arrow visible={visibleCount > 1} label="Yes" />
+          <FlowArrow visible={visibleCount > 1} label="Yes" />
 
           <div
             className="shrink-0 border-2 px-3 py-1.5 font-mono text-[11px] font-semibold"
-            style={{
-              ...show(1),
-              borderColor: "#e67e22",
-              color: "#e67e22",
-            }}
+            style={{ ...show(1), borderColor: "#e67e22", color: "#e67e22" }}
           >
             Use A2A
           </div>
@@ -85,24 +60,16 @@ export function DecisionFlowMini() {
         <div className="ml-[10px] flex items-center gap-0">
           <div
             className="shrink-0 border border-border px-3 py-1.5 font-mono text-[10px] text-ink"
-            style={{
-              ...show(3),
-              clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
-              padding: "14px 20px",
-            }}
+            style={{ ...show(3), clipPath: DIAMOND_CLIP, padding: "14px 20px" }}
           >
             Multi-turn dialog?
           </div>
 
-          <Arrow visible={visibleCount > 4} label="Yes" />
+          <FlowArrow visible={visibleCount > 4} label="Yes" />
 
           <div
             className="shrink-0 border-2 px-3 py-1.5 font-mono text-[11px] font-semibold"
-            style={{
-              ...show(4),
-              borderColor: "#e67e22",
-              color: "#e67e22",
-            }}
+            style={{ ...show(4), borderColor: "#e67e22", color: "#e67e22" }}
           >
             Use A2A
           </div>
@@ -136,30 +103,6 @@ export function DecisionFlowMini() {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function Arrow({ visible, label }: { visible: boolean; label?: string }) {
-  return (
-    <div
-      className="flex shrink-0 items-center transition-opacity duration-300"
-      style={{ opacity: visible ? 1 : 0 }}
-    >
-      <div className="h-px w-6 bg-border" />
-      {label && (
-        <span className="mx-1 font-mono text-[9px] text-ink-muted">
-          {label}
-        </span>
-      )}
-      <div
-        className="h-0 w-0"
-        style={{
-          borderTop: "4px solid transparent",
-          borderBottom: "4px solid transparent",
-          borderLeft: "6px solid #e4e4e7",
-        }}
-      />
     </div>
   );
 }

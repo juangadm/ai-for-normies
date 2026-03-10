@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useStaggerReveal } from "@/hooks/useInView";
 
 interface ChatMessage {
   sender: "CLIENT" | "AGENT";
@@ -32,29 +32,7 @@ const messages: ChatMessage[] = [
 ];
 
 export function MessageExchangeDiagram() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visibleCount, setVisibleCount] = useState(0);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          let count = 0;
-          const interval = setInterval(() => {
-            count++;
-            setVisibleCount(count);
-            if (count >= messages.length) clearInterval(interval);
-          }, 700);
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.3 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
+  const [ref, visibleCount] = useStaggerReveal(messages.length, 700);
 
   return (
     <div ref={ref} className="my-8">
@@ -90,7 +68,6 @@ export function MessageExchangeDiagram() {
                       : "translateX(16px)",
                 }}
               >
-                {/* Role badge */}
                 <div
                   className={`mb-1 font-mono text-[9px] uppercase tracking-[0.1em] ${isClient ? "text-left" : "text-right"}`}
                   style={{ color: isClient ? "#6b6f76" : "#e67e22" }}
@@ -98,7 +75,6 @@ export function MessageExchangeDiagram() {
                   [{msg.sender}]
                 </div>
 
-                {/* Bubble */}
                 <div
                   className={`border px-4 py-3 text-[13px] leading-[1.7] ${
                     isClient
@@ -109,7 +85,6 @@ export function MessageExchangeDiagram() {
                   {msg.text}
                 </div>
 
-                {/* Context annotation */}
                 {msg.context && (
                   <div
                     className={`mt-1 font-mono text-[10px] text-ink-muted ${isClient ? "text-left" : "text-right"}`}
