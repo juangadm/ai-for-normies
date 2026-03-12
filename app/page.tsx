@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { modules } from "@/content/modules";
 import { SectionPreview } from "@/components/modules/SectionPreview";
+import { HeroDiagram } from "@/components/HeroDiagram";
 
 export default function HomePage() {
   return (
@@ -19,14 +20,8 @@ export default function HomePage() {
         </p>
       </div>
 
-      {/* Hero image placeholder */}
-      <div className="mb-20">
-        <img
-          src="/images/hero.png"
-          alt="Retro technical illustration of a person at a desk with floating AI concept bubbles — a brain, a gear, a database — connected by thin lines"
-          className="w-full rounded border border-border/30"
-        />
-      </div>
+      {/* Hero diagram */}
+      <HeroDiagram />
 
       {/* Divider */}
       <hr className="mb-16 border-border" />
