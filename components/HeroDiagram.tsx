@@ -11,7 +11,7 @@
  */
 
 const O = "#e67e22";
-const DUR = "5s";
+const DUR = "8s";
 const BEGIN = "2.5s";
 
 export function HeroDiagram() {
@@ -345,21 +345,21 @@ export function HeroDiagram() {
           <circle cx="550" cy="221" r="1.2" fill={`${O}35`} />
         </g>
 
-        {/* ═══ PULSE DOT — rendered BEFORE boxes so boxes paint over it ═══ */}
-        {/* Takes the upper path: User → Prompt → Agent → MCP → Tool → Output */}
-        <circle r="4.5" fill={`${O}99`} className="hero-pulse">
+        {/* ═══ PULSE DOT — only travels on visible lines between boxes ═══ */}
+        {/* M = teleport (instant), L = visible travel along connection line */}
+        <circle r="4" fill={`${O}99`} className="hero-pulse">
           <animateMotion
             dur={DUR}
             begin={BEGIN}
             repeatCount="indefinite"
             calcMode="linear"
-            path="M 80,225 L 218,225 L 400,225 L 400,105 L 580,105 L 695,225"
+            path="M 125,225 L 156,225 M 278,225 L 338,225 M 400,204 L 400,128 M 470,105 L 533,105 M 625,110 L 655,202"
           />
         </circle>
 
         {/* ═══ NODE BOXES — on top of pulse, with SMIL highlight animations ═══ */}
 
-        {/* USER — pulse hits at ~0% */}
+        {/* USER — pulse starts here at 0% */}
         <g className="hero-node" style={{ animationDelay: "0.2s" }}>
           <rect
             x="35"
@@ -376,7 +376,7 @@ export function HeroDiagram() {
               dur={DUR}
               begin={BEGIN}
               repeatCount="indefinite"
-              keyTimes="0;0.04;0.07;1"
+              keyTimes="0;0.03;0.06;1"
               values="2.5;2.5;1;1"
             />
           </rect>
@@ -395,7 +395,7 @@ export function HeroDiagram() {
               dur={DUR}
               begin={BEGIN}
               repeatCount="indefinite"
-              keyTimes="0;0.04;0.07;1"
+              keyTimes="0;0.03;0.06;1"
               values="0.18;0.18;0;0"
             />
           </rect>
@@ -412,7 +412,7 @@ export function HeroDiagram() {
           </text>
         </g>
 
-        {/* PROMPT — pulse hits at ~18% */}
+        {/* PROMPT — pulse arrives at ~9% */}
         <g className="hero-node" style={{ animationDelay: "0.5s" }}>
           <rect
             x="158"
@@ -429,7 +429,7 @@ export function HeroDiagram() {
               dur={DUR}
               begin={BEGIN}
               repeatCount="indefinite"
-              keyTimes="0;0.15;0.18;0.21;1"
+              keyTimes="0;0.07;0.09;0.12;1"
               values="1;1;2.5;1;1"
             />
           </rect>
@@ -448,7 +448,7 @@ export function HeroDiagram() {
               dur={DUR}
               begin={BEGIN}
               repeatCount="indefinite"
-              keyTimes="0;0.15;0.18;0.21;1"
+              keyTimes="0;0.07;0.09;0.12;1"
               values="0;0;0.18;0;0"
             />
           </rect>
@@ -465,7 +465,7 @@ export function HeroDiagram() {
           </text>
         </g>
 
-        {/* AGENT — pulse hits at ~41%, bold */}
+        {/* AGENT — pulse arrives at ~28%, bold */}
         <g className="hero-node" style={{ animationDelay: "0.8s" }}>
           <rect
             x="340"
@@ -482,7 +482,7 @@ export function HeroDiagram() {
               dur={DUR}
               begin={BEGIN}
               repeatCount="indefinite"
-              keyTimes="0;0.38;0.41;0.44;1"
+              keyTimes="0;0.25;0.28;0.31;1"
               values="1.5;1.5;3;1.5;1.5"
             />
           </rect>
@@ -501,7 +501,7 @@ export function HeroDiagram() {
               dur={DUR}
               begin={BEGIN}
               repeatCount="indefinite"
-              keyTimes="0;0.38;0.41;0.44;1"
+              keyTimes="0;0.25;0.28;0.31;1"
               values="0;0;0.22;0;0"
             />
           </rect>
@@ -519,7 +519,7 @@ export function HeroDiagram() {
           </text>
         </g>
 
-        {/* MCP SERVER — pulse hits at ~56% */}
+        {/* MCP SERVER — pulse arrives at ~51% */}
         <g className="hero-node" style={{ animationDelay: "1.1s" }}>
           <rect
             x="330"
@@ -536,7 +536,7 @@ export function HeroDiagram() {
               dur={DUR}
               begin={BEGIN}
               repeatCount="indefinite"
-              keyTimes="0;0.53;0.56;0.59;1"
+              keyTimes="0;0.48;0.51;0.54;1"
               values="1;1;2.5;1;1"
             />
           </rect>
@@ -555,7 +555,7 @@ export function HeroDiagram() {
               dur={DUR}
               begin={BEGIN}
               repeatCount="indefinite"
-              keyTimes="0;0.53;0.56;0.59;1"
+              keyTimes="0;0.48;0.51;0.54;1"
               values="0;0;0.18;0;0"
             />
           </rect>
@@ -572,7 +572,7 @@ export function HeroDiagram() {
           </text>
         </g>
 
-        {/* TOOL — pulse hits at ~79% */}
+        {/* TOOL — pulse arrives at ~70% */}
         <g className="hero-node" style={{ animationDelay: "1.3s" }}>
           <rect
             x="535"
@@ -589,7 +589,7 @@ export function HeroDiagram() {
               dur={DUR}
               begin={BEGIN}
               repeatCount="indefinite"
-              keyTimes="0;0.76;0.79;0.82;1"
+              keyTimes="0;0.67;0.70;0.73;1"
               values="1;1;2.5;1;1"
             />
           </rect>
@@ -608,7 +608,7 @@ export function HeroDiagram() {
               dur={DUR}
               begin={BEGIN}
               repeatCount="indefinite"
-              keyTimes="0;0.76;0.79;0.82;1"
+              keyTimes="0;0.67;0.70;0.73;1"
               values="0;0;0.18;0;0"
             />
           </rect>
