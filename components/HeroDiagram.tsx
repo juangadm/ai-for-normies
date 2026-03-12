@@ -1,35 +1,39 @@
 "use client";
 
 /**
- * Animated SVG technical schematic — makingsoftware.com style.
- * Shows how User → Prompt → Agent → MCP/A2A/RAG → Output flow together.
- * Orange monochrome, Departure Mono ALL CAPS, dotted grid, leader lines.
+ * Animated SVG technical schematic — makingsoftware.com blueprint style.
+ * Shows AI agent architecture flow: User → Prompt → Agent → MCP/A2A → Output.
+ *
+ * - Light gray background with orange dot grid
+ * - Departure Mono ALL CAPS, orange monochrome
+ * - Pulse dot travels upper path (MCP/Tool route); boxes light up on contact
+ * - Dot rendered BEFORE boxes in SVG order so boxes naturally cover it
  */
 
 const O = "#e67e22";
+const DUR = "5s";
+const BEGIN = "2.5s";
 
 export function HeroDiagram() {
   return (
     <div className="mb-20">
       <svg
-        viewBox="0 0 780 440"
+        viewBox="0 0 800 450"
         className="w-full"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         role="img"
-        aria-label="Technical diagram: User sends a Prompt to an Agent, which calls Tools via MCP, delegates via A2A, retrieves via RAG, and produces Output"
+        aria-label="Technical diagram: User sends Prompt to Agent, which calls Tools via MCP Server, delegates via A2A, retrieves via RAG, producing Output"
       >
         <defs>
-          {/* Dot grid pattern */}
           <pattern
             id="dot-grid"
             width="20"
             height="20"
             patternUnits="userSpaceOnUse"
           >
-            <circle cx="10" cy="10" r="0.6" fill={`${O}20`} />
+            <circle cx="10" cy="10" r="0.6" fill={`${O}22`} />
           </pattern>
-          {/* Arrowhead */}
           <marker
             id="arw"
             viewBox="0 0 10 10"
@@ -46,7 +50,6 @@ export function HeroDiagram() {
               strokeWidth="1.5"
             />
           </marker>
-          {/* Arrowhead for dashed/return lines */}
           <marker
             id="arw-d"
             viewBox="0 0 10 10"
@@ -66,15 +69,15 @@ export function HeroDiagram() {
         </defs>
 
         {/* ═══ BACKGROUND ═══ */}
-        <rect width="780" height="440" fill={`${O}06`} rx="6" />
-        <rect width="780" height="440" fill="url(#dot-grid)" rx="6" />
+        <rect width="800" height="450" fill="#f0f0f2" rx="6" />
+        <rect width="800" height="450" fill="url(#dot-grid)" rx="6" />
 
         {/* ═══ CORNER LABELS ═══ */}
         <text
           x="24"
-          y="26"
-          fill={`${O}80`}
-          fontSize="10"
+          y="28"
+          fill={`${O}90`}
+          fontSize="11"
           fontFamily="var(--font-mono)"
           className="hero-label"
           style={{ animationDelay: "0.1s" }}
@@ -82,13 +85,13 @@ export function HeroDiagram() {
           FIG. 001
         </text>
         <text
-          x="762"
-          y="220"
+          x="780"
+          y="225"
           fill={`${O}50`}
-          fontSize="10"
+          fontSize="11"
           fontFamily="var(--font-mono)"
           textAnchor="middle"
-          transform="rotate(90, 762, 220)"
+          transform="rotate(90, 780, 225)"
           className="hero-label"
           style={{ animationDelay: "0.1s" }}
         >
@@ -99,80 +102,80 @@ export function HeroDiagram() {
 
         {/* USER → PROMPT */}
         <line
-          x1="115"
-          y1="220"
-          x2="148"
-          y2="220"
+          x1="125"
+          y1="225"
+          x2="156"
+          y2="225"
           stroke={O}
           strokeWidth="1"
           markerEnd="url(#arw)"
           className="hero-edge"
-          strokeDasharray="33"
-          strokeDashoffset="33"
+          strokeDasharray="31"
+          strokeDashoffset="31"
           style={{ animationDelay: "0.3s" }}
         />
         {/* PROMPT → AGENT */}
         <line
-          x1="260"
-          y1="220"
-          x2="333"
-          y2="220"
+          x1="278"
+          y1="225"
+          x2="338"
+          y2="225"
           stroke={O}
           strokeWidth="1"
           markerEnd="url(#arw)"
           className="hero-edge"
-          strokeDasharray="73"
-          strokeDashoffset="73"
+          strokeDasharray="60"
+          strokeDashoffset="60"
           style={{ animationDelay: "0.6s" }}
         />
         {/* AGENT → OUTPUT */}
         <line
-          x1="445"
-          y1="220"
-          x2="618"
-          y2="220"
+          x1="460"
+          y1="225"
+          x2="638"
+          y2="225"
           stroke={O}
           strokeWidth="1"
           markerEnd="url(#arw)"
           className="hero-edge"
-          strokeDasharray="173"
-          strokeDashoffset="173"
+          strokeDasharray="178"
+          strokeDashoffset="178"
           style={{ animationDelay: "0.9s" }}
         />
-        {/* AGENT ↑ MCP SERVER */}
+        {/* AGENT ↑ MCP */}
         <line
-          x1="390"
-          y1="201"
-          x2="390"
-          y2="121"
+          x1="400"
+          y1="204"
+          x2="400"
+          y2="128"
           stroke={O}
           strokeWidth="1"
           markerEnd="url(#arw)"
           className="hero-edge"
-          strokeDasharray="80"
-          strokeDashoffset="80"
+          strokeDasharray="76"
+          strokeDashoffset="76"
           style={{ animationDelay: "0.9s" }}
         />
-        {/* MCP SERVER → TOOL */}
+        {/* MCP → TOOL */}
         <line
-          x1="453"
-          y1="100"
-          x2="523"
-          y2="100"
+          x1="470"
+          y1="105"
+          x2="533"
+          y2="105"
           stroke={O}
           strokeWidth="1"
           markerEnd="url(#arw)"
           className="hero-edge"
-          strokeDasharray="70"
-          strokeDashoffset="70"
+          strokeDasharray="63"
+          strokeDashoffset="63"
           style={{ animationDelay: "1.2s" }}
         />
-        {/* AGENT ↓ A2A AGENT */}
+        {/* AGENT ↓ A2A */}
         <line
-          x1="390"
-          y1="239"
-          x2="390"
-          y2="319"
+          x1="400"
+          y1="246"
+          x2="400"
+          y2="326"
           stroke={O}
           strokeWidth="1"
           markerEnd="url(#arw)"
@@ -181,18 +184,18 @@ export function HeroDiagram() {
           strokeDashoffset="80"
           style={{ animationDelay: "0.9s" }}
         />
-        {/* A2A AGENT → RAG */}
+        {/* A2A → RAG */}
         <line
-          x1="453"
-          y1="340"
-          x2="523"
-          y2="340"
+          x1="470"
+          y1="345"
+          x2="533"
+          y2="345"
           stroke={O}
           strokeWidth="1"
           markerEnd="url(#arw)"
           className="hero-edge"
-          strokeDasharray="70"
-          strokeDashoffset="70"
+          strokeDasharray="63"
+          strokeDashoffset="63"
           style={{ animationDelay: "1.2s" }}
         />
 
@@ -200,10 +203,10 @@ export function HeroDiagram() {
 
         {/* TOOL ⤵ OUTPUT */}
         <line
-          x1="605"
-          y1="106"
-          x2="652"
-          y2="199"
+          x1="625"
+          y1="110"
+          x2="655"
+          y2="202"
           stroke={`${O}60`}
           strokeWidth="1"
           strokeDasharray="4 4"
@@ -213,10 +216,10 @@ export function HeroDiagram() {
         />
         {/* RAG ⤴ OUTPUT */}
         <line
-          x1="605"
-          y1="334"
-          x2="652"
-          y2="241"
+          x1="625"
+          y1="340"
+          x2="655"
+          y2="248"
           stroke={`${O}60`}
           strokeWidth="1"
           strokeDasharray="4 4"
@@ -225,352 +228,506 @@ export function HeroDiagram() {
           style={{ animationDelay: "1.5s" }}
         />
 
-        {/* ═══ ANNOTATION LEADER LINES ═══ */}
+        {/* ═══ ANNOTATIONS (leader lines) ═══ */}
 
-        {/* CONTEXT — above PROMPT→AGENT line */}
-        <g
-          className="hero-label"
-          style={{ animationDelay: "1.7s" }}
-        >
+        {/* CONTEXT */}
+        <g className="hero-label" style={{ animationDelay: "1.7s" }}>
           <text
-            x="297"
-            y="192"
+            x="309"
+            y="205"
             fill={`${O}70`}
-            fontSize="8"
+            fontSize="9"
             fontFamily="var(--font-mono)"
             textAnchor="middle"
           >
             CONTEXT
           </text>
           <line
-            x1="297"
-            y1="196"
-            x2="297"
-            y2="216"
+            x1="309"
+            y1="209"
+            x2="309"
+            y2="221"
             stroke={`${O}35`}
             strokeWidth="0.5"
           />
-          <circle cx="297" cy="216" r="1.2" fill={`${O}35`} />
+          <circle cx="309" cy="221" r="1.2" fill={`${O}35`} />
         </g>
 
-        {/* TOOL CALL — left of AGENT→MCP line */}
-        <g
-          className="hero-label"
-          style={{ animationDelay: "1.8s" }}
-        >
+        {/* TOOL CALL */}
+        <g className="hero-label" style={{ animationDelay: "1.8s" }}>
           <text
-            x="338"
-            y="163"
+            x="348"
+            y="162"
             fill={`${O}70`}
-            fontSize="8"
+            fontSize="9"
             fontFamily="var(--font-mono)"
             textAnchor="end"
           >
             TOOL CALL
           </text>
           <line
-            x1="342"
-            y1="160"
-            x2="386"
-            y2="160"
+            x1="352"
+            y1="159"
+            x2="396"
+            y2="159"
             stroke={`${O}35`}
             strokeWidth="0.5"
           />
-          <circle cx="386" cy="160" r="1.2" fill={`${O}35`} />
+          <circle cx="396" cy="159" r="1.2" fill={`${O}35`} />
         </g>
 
-        {/* HANDOFF — left of AGENT→A2A line */}
-        <g
-          className="hero-label"
-          style={{ animationDelay: "1.8s" }}
-        >
+        {/* HANDOFF */}
+        <g className="hero-label" style={{ animationDelay: "1.8s" }}>
           <text
-            x="338"
-            y="283"
+            x="348"
+            y="292"
             fill={`${O}70`}
-            fontSize="8"
+            fontSize="9"
             fontFamily="var(--font-mono)"
             textAnchor="end"
           >
             HANDOFF
           </text>
           <line
-            x1="342"
-            y1="280"
-            x2="386"
-            y2="280"
+            x1="352"
+            y1="289"
+            x2="396"
+            y2="289"
             stroke={`${O}35`}
             strokeWidth="0.5"
           />
-          <circle cx="386" cy="280" r="1.2" fill={`${O}35`} />
+          <circle cx="396" cy="289" r="1.2" fill={`${O}35`} />
         </g>
 
-        {/* RETRIEVAL — above A2A→RAG line */}
-        <g
-          className="hero-label"
-          style={{ animationDelay: "1.9s" }}
-        >
+        {/* RETRIEVAL */}
+        <g className="hero-label" style={{ animationDelay: "1.9s" }}>
           <text
-            x="488"
-            y="328"
+            x="503"
+            y="333"
             fill={`${O}70`}
-            fontSize="8"
+            fontSize="9"
             fontFamily="var(--font-mono)"
             textAnchor="middle"
           >
             RETRIEVAL
           </text>
           <line
-            x1="488"
-            y1="331"
-            x2="488"
-            y2="336"
+            x1="503"
+            y1="337"
+            x2="503"
+            y2="341"
             stroke={`${O}35`}
             strokeWidth="0.5"
           />
-          <circle cx="488" cy="336" r="1.2" fill={`${O}35`} />
+          <circle cx="503" cy="341" r="1.2" fill={`${O}35`} />
         </g>
 
-        {/* RESPONSE — above AGENT→OUTPUT line */}
-        <g
-          className="hero-label"
-          style={{ animationDelay: "1.9s" }}
-        >
+        {/* RESPONSE */}
+        <g className="hero-label" style={{ animationDelay: "1.9s" }}>
           <text
-            x="532"
-            y="206"
+            x="550"
+            y="205"
             fill={`${O}70`}
-            fontSize="8"
+            fontSize="9"
             fontFamily="var(--font-mono)"
             textAnchor="middle"
           >
             RESPONSE
           </text>
           <line
-            x1="532"
-            y1="210"
-            x2="532"
-            y2="216"
+            x1="550"
+            y1="209"
+            x2="550"
+            y2="221"
             stroke={`${O}35`}
             strokeWidth="0.5"
           />
-          <circle cx="532" cy="216" r="1.2" fill={`${O}35`} />
+          <circle cx="550" cy="221" r="1.2" fill={`${O}35`} />
         </g>
 
-        {/* ═══ NODE BOXES ═══ */}
+        {/* ═══ PULSE DOT — rendered BEFORE boxes so boxes paint over it ═══ */}
+        {/* Takes the upper path: User → Prompt → Agent → MCP → Tool → Output */}
+        <circle r="4.5" fill={`${O}99`} className="hero-pulse">
+          <animateMotion
+            dur={DUR}
+            begin={BEGIN}
+            repeatCount="indefinite"
+            calcMode="linear"
+            path="M 80,225 L 218,225 L 400,225 L 400,105 L 580,105 L 695,225"
+          />
+        </circle>
 
-        {/* USER */}
+        {/* ═══ NODE BOXES — on top of pulse, with SMIL highlight animations ═══ */}
+
+        {/* USER — pulse hits at ~0% */}
         <g className="hero-node" style={{ animationDelay: "0.2s" }}>
           <rect
             x="35"
-            y="201"
-            width="80"
-            height="38"
+            y="204"
+            width="90"
+            height="42"
             rx="4"
-            fill={`${O}0a`}
+            fill={`${O}08`}
             stroke={O}
             strokeWidth="1"
-          />
-          <text
-            x="75"
-            y="224"
+          >
+            <animate
+              attributeName="stroke-width"
+              dur={DUR}
+              begin={BEGIN}
+              repeatCount="indefinite"
+              keyTimes="0;0.04;0.07;1"
+              values="2.5;2.5;1;1"
+            />
+          </rect>
+          <rect
+            x="35"
+            y="204"
+            width="90"
+            height="42"
+            rx="4"
             fill={O}
-            fontSize="11"
-            fontFamily="var(--font-mono)"
+            opacity="0"
+            pointerEvents="none"
+          >
+            <animate
+              attributeName="opacity"
+              dur={DUR}
+              begin={BEGIN}
+              repeatCount="indefinite"
+              keyTimes="0;0.04;0.07;1"
+              values="0.18;0.18;0;0"
+            />
+          </rect>
+          <text
+            x="80"
+            y="225"
             textAnchor="middle"
-            dominantBaseline="central"
+            dy="0.35em"
+            fill={O}
+            fontSize="13"
+            fontFamily="var(--font-mono)"
           >
             USER
           </text>
         </g>
 
-        {/* PROMPT */}
+        {/* PROMPT — pulse hits at ~18% */}
         <g className="hero-node" style={{ animationDelay: "0.5s" }}>
           <rect
-            x="150"
-            y="201"
-            width="110"
-            height="38"
+            x="158"
+            y="204"
+            width="120"
+            height="42"
             rx="4"
-            fill={`${O}0a`}
+            fill={`${O}08`}
             stroke={O}
             strokeWidth="1"
-          />
-          <text
-            x="205"
-            y="224"
+          >
+            <animate
+              attributeName="stroke-width"
+              dur={DUR}
+              begin={BEGIN}
+              repeatCount="indefinite"
+              keyTimes="0;0.15;0.18;0.21;1"
+              values="1;1;2.5;1;1"
+            />
+          </rect>
+          <rect
+            x="158"
+            y="204"
+            width="120"
+            height="42"
+            rx="4"
             fill={O}
-            fontSize="11"
-            fontFamily="var(--font-mono)"
+            opacity="0"
+            pointerEvents="none"
+          >
+            <animate
+              attributeName="opacity"
+              dur={DUR}
+              begin={BEGIN}
+              repeatCount="indefinite"
+              keyTimes="0;0.15;0.18;0.21;1"
+              values="0;0;0.18;0;0"
+            />
+          </rect>
+          <text
+            x="218"
+            y="225"
             textAnchor="middle"
-            dominantBaseline="central"
+            dy="0.35em"
+            fill={O}
+            fontSize="13"
+            fontFamily="var(--font-mono)"
           >
             PROMPT
           </text>
         </g>
 
-        {/* AGENT — central node, bolder */}
+        {/* AGENT — pulse hits at ~41%, bold */}
         <g className="hero-node" style={{ animationDelay: "0.8s" }}>
           <rect
-            x="335"
-            y="201"
-            width="110"
-            height="38"
+            x="340"
+            y="204"
+            width="120"
+            height="42"
             rx="4"
-            fill={`${O}14`}
+            fill={`${O}10`}
             stroke={O}
             strokeWidth="1.5"
-          />
-          <text
-            x="390"
-            y="224"
+          >
+            <animate
+              attributeName="stroke-width"
+              dur={DUR}
+              begin={BEGIN}
+              repeatCount="indefinite"
+              keyTimes="0;0.38;0.41;0.44;1"
+              values="1.5;1.5;3;1.5;1.5"
+            />
+          </rect>
+          <rect
+            x="340"
+            y="204"
+            width="120"
+            height="42"
+            rx="4"
             fill={O}
-            fontSize="11"
-            fontFamily="var(--font-mono)"
+            opacity="0"
+            pointerEvents="none"
+          >
+            <animate
+              attributeName="opacity"
+              dur={DUR}
+              begin={BEGIN}
+              repeatCount="indefinite"
+              keyTimes="0;0.38;0.41;0.44;1"
+              values="0;0;0.22;0;0"
+            />
+          </rect>
+          <text
+            x="400"
+            y="225"
             textAnchor="middle"
-            dominantBaseline="central"
+            dy="0.35em"
+            fill={O}
+            fontSize="13"
+            fontFamily="var(--font-mono)"
             fontWeight="bold"
           >
             AGENT
           </text>
         </g>
 
-        {/* MCP SERVER */}
+        {/* MCP SERVER — pulse hits at ~56% */}
         <g className="hero-node" style={{ animationDelay: "1.1s" }}>
           <rect
-            x="327"
-            y="81"
-            width="126"
-            height="38"
+            x="330"
+            y="84"
+            width="140"
+            height="42"
             rx="4"
-            fill={`${O}0a`}
+            fill={`${O}08`}
             stroke={O}
             strokeWidth="1"
-          />
-          <text
-            x="390"
-            y="104"
+          >
+            <animate
+              attributeName="stroke-width"
+              dur={DUR}
+              begin={BEGIN}
+              repeatCount="indefinite"
+              keyTimes="0;0.53;0.56;0.59;1"
+              values="1;1;2.5;1;1"
+            />
+          </rect>
+          <rect
+            x="330"
+            y="84"
+            width="140"
+            height="42"
+            rx="4"
             fill={O}
-            fontSize="11"
-            fontFamily="var(--font-mono)"
+            opacity="0"
+            pointerEvents="none"
+          >
+            <animate
+              attributeName="opacity"
+              dur={DUR}
+              begin={BEGIN}
+              repeatCount="indefinite"
+              keyTimes="0;0.53;0.56;0.59;1"
+              values="0;0;0.18;0;0"
+            />
+          </rect>
+          <text
+            x="400"
+            y="105"
             textAnchor="middle"
-            dominantBaseline="central"
+            dy="0.35em"
+            fill={O}
+            fontSize="13"
+            fontFamily="var(--font-mono)"
           >
             MCP SERVER
           </text>
         </g>
 
-        {/* TOOL */}
+        {/* TOOL — pulse hits at ~79% */}
         <g className="hero-node" style={{ animationDelay: "1.3s" }}>
           <rect
-            x="525"
-            y="81"
-            width="80"
-            height="38"
+            x="535"
+            y="84"
+            width="90"
+            height="42"
             rx="4"
-            fill={`${O}0a`}
+            fill={`${O}08`}
             stroke={O}
             strokeWidth="1"
-          />
-          <text
-            x="565"
-            y="104"
+          >
+            <animate
+              attributeName="stroke-width"
+              dur={DUR}
+              begin={BEGIN}
+              repeatCount="indefinite"
+              keyTimes="0;0.76;0.79;0.82;1"
+              values="1;1;2.5;1;1"
+            />
+          </rect>
+          <rect
+            x="535"
+            y="84"
+            width="90"
+            height="42"
+            rx="4"
             fill={O}
-            fontSize="11"
-            fontFamily="var(--font-mono)"
+            opacity="0"
+            pointerEvents="none"
+          >
+            <animate
+              attributeName="opacity"
+              dur={DUR}
+              begin={BEGIN}
+              repeatCount="indefinite"
+              keyTimes="0;0.76;0.79;0.82;1"
+              values="0;0;0.18;0;0"
+            />
+          </rect>
+          <text
+            x="580"
+            y="105"
             textAnchor="middle"
-            dominantBaseline="central"
+            dy="0.35em"
+            fill={O}
+            fontSize="13"
+            fontFamily="var(--font-mono)"
           >
             TOOL
           </text>
         </g>
 
-        {/* A2A AGENT */}
+        {/* A2A AGENT — no highlight (pulse takes upper path) */}
         <g className="hero-node" style={{ animationDelay: "1.1s" }}>
           <rect
-            x="327"
-            y="321"
-            width="126"
-            height="38"
+            x="330"
+            y="324"
+            width="140"
+            height="42"
             rx="4"
-            fill={`${O}0a`}
+            fill={`${O}08`}
             stroke={O}
             strokeWidth="1"
           />
           <text
-            x="390"
-            y="344"
-            fill={O}
-            fontSize="11"
-            fontFamily="var(--font-mono)"
+            x="400"
+            y="345"
             textAnchor="middle"
-            dominantBaseline="central"
+            dy="0.35em"
+            fill={O}
+            fontSize="13"
+            fontFamily="var(--font-mono)"
           >
             A2A AGENT
           </text>
         </g>
 
-        {/* RAG */}
+        {/* RAG — no highlight */}
         <g className="hero-node" style={{ animationDelay: "1.3s" }}>
           <rect
-            x="525"
-            y="321"
-            width="80"
-            height="38"
+            x="535"
+            y="324"
+            width="90"
+            height="42"
             rx="4"
-            fill={`${O}0a`}
+            fill={`${O}08`}
             stroke={O}
             strokeWidth="1"
           />
           <text
-            x="565"
-            y="344"
-            fill={O}
-            fontSize="11"
-            fontFamily="var(--font-mono)"
+            x="580"
+            y="345"
             textAnchor="middle"
-            dominantBaseline="central"
+            dy="0.35em"
+            fill={O}
+            fontSize="13"
+            fontFamily="var(--font-mono)"
           >
             RAG
           </text>
         </g>
 
-        {/* OUTPUT — endpoint, bolder */}
+        {/* OUTPUT — pulse hits at ~97%, bold */}
         <g className="hero-node" style={{ animationDelay: "1.5s" }}>
           <rect
-            x="620"
-            y="201"
-            width="100"
-            height="38"
+            x="640"
+            y="204"
+            width="110"
+            height="42"
             rx="4"
-            fill={`${O}14`}
+            fill={`${O}10`}
             stroke={O}
             strokeWidth="1.5"
-          />
-          <text
-            x="670"
-            y="224"
+          >
+            <animate
+              attributeName="stroke-width"
+              dur={DUR}
+              begin={BEGIN}
+              repeatCount="indefinite"
+              keyTimes="0;0.94;0.97;1"
+              values="1.5;1.5;3;1.5"
+            />
+          </rect>
+          <rect
+            x="640"
+            y="204"
+            width="110"
+            height="42"
+            rx="4"
             fill={O}
-            fontSize="11"
-            fontFamily="var(--font-mono)"
+            opacity="0"
+            pointerEvents="none"
+          >
+            <animate
+              attributeName="opacity"
+              dur={DUR}
+              begin={BEGIN}
+              repeatCount="indefinite"
+              keyTimes="0;0.94;0.97;1"
+              values="0;0;0.22;0"
+            />
+          </rect>
+          <text
+            x="695"
+            y="225"
             textAnchor="middle"
-            dominantBaseline="central"
+            dy="0.35em"
+            fill={O}
+            fontSize="13"
+            fontFamily="var(--font-mono)"
             fontWeight="bold"
           >
             OUTPUT
           </text>
         </g>
-
-        {/* ═══ SIGNAL PULSE ═══ */}
-        {/* A small dot traveling the main path on loop */}
-        <circle r="3" fill={O} opacity="0.5" className="hero-pulse">
-          <animateMotion
-            dur="4s"
-            repeatCount="indefinite"
-            begin="2.5s"
-            path="M 115,220 L 150,220 260,220 335,220 445,220 620,220"
-          />
-        </circle>
       </svg>
     </div>
   );
