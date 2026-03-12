@@ -32,7 +32,7 @@ export function HeroDiagram() {
             height="20"
             patternUnits="userSpaceOnUse"
           >
-            <circle cx="10" cy="10" r="0.6" fill={`${O}22`} />
+            <circle cx="10" cy="10" r="0.5" fill={`${O}10`} />
           </pattern>
           <marker
             id="arw"
@@ -69,7 +69,7 @@ export function HeroDiagram() {
         </defs>
 
         {/* ═══ BACKGROUND ═══ */}
-        <rect width="800" height="450" fill="#f0f0f2" rx="6" />
+        <rect width="800" height="450" fill="#f8f8f9" rx="6" />
         <rect width="800" height="450" fill="url(#dot-grid)" rx="6" />
 
         {/* ═══ CORNER LABELS ═══ */}
